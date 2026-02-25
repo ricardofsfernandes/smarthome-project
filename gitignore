@@ -1,0 +1,12 @@
+# Pastas de dependências (muito pesadas, o npm trata disto)
+node_modules/
+
+# Ficheiros de sistema
+.DS_Store
+Thumbs.db
+
+# Ficheiros de configuração sensíveis (senhas, chaves de API)
+.env
+
+# Pastas de logs
+npm-debug.log*
