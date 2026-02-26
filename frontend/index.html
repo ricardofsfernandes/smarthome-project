@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>SmartHome - Lista de Compras</title>
-    <style>
-        body { font-family: sans-serif; background: #121212; color: white; padding: 20px; }
-        h1 { color: #00ff88; }
-        .item { background: #1e1e1e; padding: 10px; margin: 5px 0; border-radius: 5px; border-left: 5px solid #00ff88; }
-    </style>
+    <link rel="stylesheet" href="assets/css/main.css">
 </head>
 <body>
     <h1>Minha Lista de Compras</h1>
@@ -23,35 +19,51 @@
     </div>
 
     <script>
-        // Função para carregar (já tens esta)
-        async function carregarCompras() {
-            const resposta = await fetch('http://localhost:3000/compras');
-            const dados = await resposta.json();
-            const divLista = document.getElementById('lista');
-            divLista.innerHTML = ''; 
-            dados.forEach(item => {
-                divLista.innerHTML += `<div class="item">${item.item} - Qtd: ${item.quantidade}</div>`;
-            });
-        }
+    const API_URL = 'http://localhost:3000/compras';
 
-        // NOVA FUNÇÃO: Enviar para o servidor
-        async function adicionarItem() {
-            const nome = document.getElementById('itemNome').value;
-            const qtd = document.getElementById('itemQtd').value;
+    async function carregarCompras() {
+        const resposta = await fetch(API_URL);
+        const dados = await resposta.json();
+        const divLista = document.getElementById('lista');
+        divLista.innerHTML = ''; 
 
-            await fetch('http://localhost:3000/compras', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ item: nome, quantidade: parseInt(qtd) })
-            });
+        dados.forEach(item => {
+            // Adicionamos um botão que chama a função apagarItem com o ID correto
+            divLista.innerHTML += `
+                <div class="item" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>${item.item} - Qtd: ${item.quantidade}</span>
+                    <button onclick="apagarItem(${item.id})" style="background: #ff4444; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px;">
+                        Apagar
+                    </button>
+                </div>`;
+        });
+    }
 
-            // Limpa os campos e recarrega a lista
-            document.getElementById('itemNome').value = '';
-            document.getElementById('itemQtd').value = '';
-            carregarCompras();
-        }
+    async function adicionarItem() {
+        const nome = document.getElementById('itemNome').value;
+        const qtd = document.getElementById('itemQtd').value;
 
+        if (!nome || !qtd) return alert("Preenche os campos!");
+
+        await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ item: nome, quantidade: parseInt(qtd) })
+        });
+
+        document.getElementById('itemNome').value = '';
+        document.getElementById('itemQtd').value = '';
         carregarCompras();
-    </script>
+    }
+
+    // NOVA FUNÇÃO: Apagar
+    async function apagarItem(id) {
+        // Usamos a rota que criámos no backend: /compras/limpar/:id
+        await fetch(`${API_URL}/limpar/${id}`);
+        carregarCompras(); // Atualiza a lista após apagar
+    }
+
+    carregarCompras();
+</script>
 </body>
 </html>
