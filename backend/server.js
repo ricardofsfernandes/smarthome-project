@@ -1,43 +1,48 @@
+require('dotenv').config(); // 1. Carregar variáveis secretas
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000; // Adaptável para a nuvem (Render)
 
-// 1. Middlewares
+// 2. Middlewares
 app.use(cors());
 app.use(express.json());
 
-// 2. LIGAÇÃO AO MONGODB 
-// IMPORTANTE: Substitui o link abaixo pelo teu real do Atlas.
-// Mantém a tua password: 41arvbZsPNTEMpS1
-const mongoURI = 'mongodb+srv://ricardo_dev:41arvbZsPNTEMpS1@cluster0.2wedql6.mongodb.net/smarthome?retryWrites=true&w=majority';
+// 3. LIGAÇÃO AO MONGODB (Usando a variável do ficheiro .env)
+const mongoURI = process.env.MONGO_URI;
+
+if (!mongoURI) {
+    console.error("❌ ERRO: A variável MONGO_URI não foi definida no ficheiro .env");
+    process.exit(1);
+}
 
 mongoose.connect(mongoURI)
-  .then(() => console.log('✅ Conectado ao MongoDB Atlas com sucesso!'))
-  .catch(err => console.error('❌ Erro ao ligar ao MongoDB:', err));
+    .then(() => console.log('✅ Conectado ao MongoDB Atlas (Modo Seguro)'))
+    .catch(err => console.error('❌ Erro de ligação:', err));
 
-// 3. MODELO DE DADOS (Schema)
+// 4. MODELO DE DADOS
 const ItemSchema = new mongoose.Schema({
-    item: String,
-    quantidade: Number
+    item: { type: String, required: true },
+    quantidade: { type: Number, default: 1 },
+    concluido: { type: Boolean, default: false } // Campo novo para tarefas!
 });
 const Item = mongoose.model('Item', ItemSchema);
 
-// 4. ROTAS
+// 5. ROTAS
 
-// VER ITENS (GET)
+// Listar tudo
 app.get('/compras', async (req, res) => {
     try {
         const lista = await Item.find();
         res.json(lista);
     } catch (err) {
-        res.status(500).json({ erro: "Erro ao procurar na BD" });
+        res.status(500).json({ erro: "Erro ao ler dados" });
     }
 });
 
-// ADICIONAR ITEM (POST)
+// Adicionar novo
 app.post('/compras', async (req, res) => {
     try {
         const novoItem = new Item({
@@ -45,25 +50,25 @@ app.post('/compras', async (req, res) => {
             quantidade: req.body.quantidade
         });
         await novoItem.save();
-        const listaAtualizada = await Item.find();
-        res.status(201).json(listaAtualizada);
+        const lista = await Item.find();
+        res.status(201).json(lista);
     } catch (err) {
-        res.status(500).json({ erro: "Erro ao guardar na BD" });
+        res.status(500).json({ erro: "Erro ao guardar" });
     }
 });
 
-// APAGAR ITEM (DELETE)
+// Apagar por ID
 app.get('/compras/limpar/:id', async (req, res) => {
     try {
         await Item.findByIdAndDelete(req.params.id);
-        const listaRestante = await Item.find();
-        res.json(listaRestante);
+        const lista = await Item.find();
+        res.json(lista);
     } catch (err) {
-        res.status(500).json({ erro: "Erro ao apagar na BD" });
+        res.status(500).json({ erro: "Erro ao apagar" });
     }
 });
 
-// 5. LIGAR O SERVIDOR
+// 6. ARRANCAR
 app.listen(PORT, () => {
-    console.log(`Servidor a correr em http://localhost:${PORT}`);
+    console.log(`🚀 Servidor online na porta ${PORT}`);
 });
