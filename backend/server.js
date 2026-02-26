@@ -1,50 +1,69 @@
 const express = require('express');
-const cors = require('cors'); 
+const cors = require('cors');
+const mongoose = require('mongoose');
 
-const app = express(); // Primeiro criamos o 'app'
+const app = express();
 const PORT = 3000;
 
-// Agora que o 'app' existe, podemos configurar os middlewares
-app.use(cors()); 
+// 1. Middlewares
+app.use(cors());
 app.use(express.json());
 
-// 2. A tua lista inicial de compras
-let listaCompras = [
-    { id: 1, item: 'Leite', quantidade: 2 },
-    { id: 2, item: 'Ovos', quantidade: 12 }
-];
+// 2. LIGAÇÃO AO MONGODB 
+// IMPORTANTE: Substitui o link abaixo pelo teu real do Atlas.
+// Mantém a tua password: 41arvbZsPNTEMpS1
+const mongoURI = 'mongodb+srv://ricardo_dev:41arvbZsPNTEMpS1@cluster0.2wedql6.mongodb.net/smarthome?retryWrites=true&w=majority';
 
-// 3. Rota de teste
-app.get('/', (req, res) => {
-    res.send('Servidor SmartHome Online!');
+mongoose.connect(mongoURI)
+  .then(() => console.log('✅ Conectado ao MongoDB Atlas com sucesso!'))
+  .catch(err => console.error('❌ Erro ao ligar ao MongoDB:', err));
+
+// 3. MODELO DE DADOS (Schema)
+const ItemSchema = new mongoose.Schema({
+    item: String,
+    quantidade: Number
+});
+const Item = mongoose.model('Item', ItemSchema);
+
+// 4. ROTAS
+
+// VER ITENS (GET)
+app.get('/compras', async (req, res) => {
+    try {
+        const lista = await Item.find();
+        res.json(lista);
+    } catch (err) {
+        res.status(500).json({ erro: "Erro ao procurar na BD" });
+    }
 });
 
-// 4. Rota para VER as compras
-app.get('/compras', (req, res) => {
-    res.json(listaCompras);
+// ADICIONAR ITEM (POST)
+app.post('/compras', async (req, res) => {
+    try {
+        const novoItem = new Item({
+            item: req.body.item,
+            quantidade: req.body.quantidade
+        });
+        await novoItem.save();
+        const listaAtualizada = await Item.find();
+        res.status(201).json(listaAtualizada);
+    } catch (err) {
+        res.status(500).json({ erro: "Erro ao guardar na BD" });
+    }
 });
 
-// 5. Rota para ADICIONAR um item (POST)
-app.post('/compras', (req, res) => {
-    const novoItem = {
-        id: listaCompras.length + 1,
-        item: req.body.item,
-        quantidade: req.body.quantidade
-    };
-    listaCompras.push(novoItem);
-    console.log('Item adicionado com sucesso:', novoItem);
-    res.status(201).json(listaCompras);
+// APAGAR ITEM (DELETE)
+app.get('/compras/limpar/:id', async (req, res) => {
+    try {
+        await Item.findByIdAndDelete(req.params.id);
+        const listaRestante = await Item.find();
+        res.json(listaRestante);
+    } catch (err) {
+        res.status(500).json({ erro: "Erro ao apagar na BD" });
+    }
 });
 
-// 6. Rota para APAGAR um item
-app.get('/compras/limpar/:id', (req, res) => {
-    const idParaRemover = parseInt(req.params.id);
-    listaCompras = listaCompras.filter(item => item.id !== idParaRemover);
-    console.log(`Item ${idParaRemover} removido.`);
-    res.json(listaCompras);
-});
-
-// 7. Ligar o servidor (SEMPRE NO FIM)
+// 5. LIGAR O SERVIDOR
 app.listen(PORT, () => {
     console.log(`Servidor a correr em http://localhost:${PORT}`);
 });
