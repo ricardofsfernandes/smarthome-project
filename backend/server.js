@@ -25,3 +25,18 @@ app.get('/compras', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Servidor a correr em http://localhost:${PORT}`);
 });
+
+// Rota para ADICIONAR um item novo (POST)
+app.post('/compras', (req, res) => {
+    const novoItem = {
+        id: listaCompras.length + 1,
+        item: req.body.item,
+        quantidade: req.body.quantidade
+    };
+
+    listaCompras.push(novoItem);
+    console.log('Item adicionado com sucesso:', novoItem);
+    
+    // Respondemos com a lista completa para confirmar
+    res.status(201).json(listaCompras);
+});
