@@ -1,8 +1,11 @@
 const express = require('express');
-const app = express();
+const cors = require('cors'); 
+
+const app = express(); // Primeiro criamos o 'app'
 const PORT = 3000;
 
-// 1. Configuração para o servidor entender JSON
+// Agora que o 'app' existe, podemos configurar os middlewares
+app.use(cors()); 
 app.use(express.json());
 
 // 2. A tua lista inicial de compras
@@ -33,7 +36,7 @@ app.post('/compras', (req, res) => {
     res.status(201).json(listaCompras);
 });
 
-// 6. Rota para APAGAR um item (DELETE via GET para teste fácil)
+// 6. Rota para APAGAR um item
 app.get('/compras/limpar/:id', (req, res) => {
     const idParaRemover = parseInt(req.params.id);
     listaCompras = listaCompras.filter(item => item.id !== idParaRemover);
