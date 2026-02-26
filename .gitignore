@@ -10,3 +10,6 @@ Thumbs.db
 
 # Pastas de logs
 npm-debug.log*
+
+node_modules
+.env

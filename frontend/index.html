@@ -19,7 +19,7 @@
     </div>
 
     <script>
-    const API_URL = 'http://localhost:3000/compras';
+    const API_URL = 'https://smarthome-project.onrender.com/compras';
 
     async function carregarCompras() {
         const resposta = await fetch(API_URL);
@@ -28,15 +28,12 @@
         divLista.innerHTML = ''; 
 
         dados.forEach(item => {
-            // Adicionamos um botão que chama a função apagarItem com o ID correto
-            divLista.innerHTML += `
-                <div class="item" style="display: flex; justify-content: space-between; align-items: center;">
-                    <span>${item.item} - Qtd: ${item.quantidade}</span>
-                    <button onclick="apagarItem(${item.id})" style="background: #ff4444; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px;">
-                        Apagar
-                    </button>
-                </div>`;
-        });
+    divLista.innerHTML += `
+        <div class="item">
+            <span>${item.item} - Qtd: ${item.quantidade}</span>
+            <button onclick="apagarItem('${item._id}')" class="del-btn">Apagar</button>
+        </div>`;
+});
     }
 
     async function adicionarItem() {
