@@ -7,61 +7,85 @@
     <link rel="stylesheet" href="assets/css/main.css">
 </head>
 <body>
-    <h1>Minha Lista de Compras</h1>
+    <div class="container">
+        <header>
+            <h2>Minha Lista de Compras</h2>
+        </header>
 
-    <div style="margin-bottom: 20px;">
-        <input type="text" id="itemNome" placeholder="Item (ex: Pão)">
-        <input type="number" id="itemQtd" placeholder="Qtd" style="width: 50px;">
-        <button onclick="adicionarItem()">Adicionar</button>
-    </div>
+        <div class="input-group">
+            <input type="text" id="itemInput" placeholder="Item (ex: Pão)">
+            <input type="number" id="qtdInput" placeholder="Qtd" value="1">
+            <button id="add-btn" onclick="adicionarItem()">Adicionar Item</button>
+        </div>
 
-    <div id="lista">
-        <p>A carregar lista do servidor...</p>
+        <div id="lista-compras">
+            <p style="text-align:center;">A carregar lista...</p>
+        </div>
     </div>
 
     <script>
-    const API_URL = 'https://smarthome-project.onrender.com/compras';
+    // URL do teu Backend no Render
+        const API_URL = 'https://smarthome-project.onrender.com/compras';
 
-    async function carregarCompras() {
-        const resposta = await fetch(API_URL);
-        const dados = await resposta.json();
-        const divLista = document.getElementById('lista');
-        divLista.innerHTML = ''; 
+        async function carregarLista() {
+            try {
+                const res = await fetch(API_URL);
+                const dados = await res.json();
+                renderizarLista(dados);
+            } catch (err) {
+                console.error("Erro ao carregar:", err);
+            }
+        }
 
-        dados.forEach(item => {
-    divLista.innerHTML += `
-        <div class="item">
-            <span>${item.item} - Qtd: ${item.quantidade}</span>
-            <button onclick="apagarItem('${item._id}')" class="del-btn">Apagar</button>
-        </div>`;
-});
-    }
+        function renderizarLista(itens) {
+            const container = document.getElementById('lista-compras');
+            container.innerHTML = '';
+            
+            itens.forEach(item => {
+                container.innerHTML += `
+                    <div class="item">
+                        <div>
+                            <strong>${item.item}</strong> <br>
+                            <small>Qtd: ${item.quantidade}</small>
+                        </div>
+                        <button class="del-btn" onclick="apagarItem('${item._id}')">Apagar</button>
+                    </div>
+                `;
+            });
+        }
 
-    async function adicionarItem() {
-        const nome = document.getElementById('itemNome').value;
-        const qtd = document.getElementById('itemQtd').value;
+        async function adicionarItem() {
+            const nome = document.getElementById('itemInput').value;
+            const qtd = document.getElementById('qtdInput').value;
 
-        if (!nome || !qtd) return alert("Preenche os campos!");
+            if (!nome) return alert("Escreve o nome do item!");
 
-        await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ item: nome, quantidade: parseInt(qtd) })
-        });
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ item: nome, quantidade: qtd })
+                });
+                const novaLista = await res.json();
+                renderizarLista(novaLista);
+                document.getElementById('itemInput').value = '';
+            } catch (err) {
+                alert("Erro ao adicionar!");
+            }
+        }
 
-        document.getElementById('itemNome').value = '';
-        document.getElementById('itemQtd').value = '';
-        carregarCompras();
-    }
+        async function apagarItem(id) {
+            try {
+                const res = await fetch(`${API_URL}/limpar/${id}`);
+                const novaLista = await res.json();
+                renderizarLista(novaLista);
+            } catch (err) {
+                alert("Erro ao apagar!");
+            }
+        }
 
-    // NOVA FUNÇÃO: Apagar
-    async function apagarItem(id) {
-        // Usamos a rota que criámos no backend: /compras/limpar/:id
-        await fetch(`${API_URL}/limpar/${id}`);
-        carregarCompras(); // Atualiza a lista após apagar
-    }
-
-    carregarCompras();
+        // Iniciar
+        carregarLista();
 </script>
 </body>
 </html>

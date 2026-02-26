@@ -1,5 +1,5 @@
 :root {
-    --primary: #2563eb;
+    --primary: #3b82f6;
     --bg: #0f172a;
     --card: #1e293b;
     --text: #f8fafc;
@@ -9,64 +9,98 @@ body {
     font-family: 'Inter', system-ui, sans-serif;
     background-color: var(--bg);
     color: var(--text);
-    display: flex;
-    justify-content: center;
-    padding: 20px;
     margin: 0;
+    display: flex;
+    justify-content: center; /* Centro horizontal */
+    align-items: flex-start; /* Começa no topo com respiro */
+    min-height: 100vh;
+    padding: 40px 20px;
 }
 
 .container {
-    background: var(--card);
-    padding: 2rem;
-    border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
     width: 100%;
     max-width: 450px;
-    border: 1px solid #334155;
+    background: var(--card);
+    padding: 1.5rem; /* Reduzi um pouco para ganhar espaço em telas pequenas */
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.05);
+    
+    /* FORÇA O EMPILHAMENTO VERTICAL */
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
 }
 
-h2 { text-align: center; font-weight: 700; margin-bottom: 1.5rem; color: #60a5fa; }
+header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    width: 100%; /* Ocupa a largura toda para não deixar nada ficar ao lado */
+}
 
-.input-group { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+h2 { 
+    margin: 0; 
+    font-size: 1.4rem; /* Um pouco menor para caber no iPhone sem quebrar */
+    color: #60a5fa;
+    font-weight: 800;
+    line-height: 1.2;
+}
 
-input { 
+/* O Segredo do Alinhamento dos Inputs */
+.input-group {
+    display: grid;
+    grid-template-columns: 1fr 70px; /* Reduzi a coluna da Qtd para 70px */
+    gap: 10px;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+input {
     background: #334155;
     border: 1px solid #475569;
-    padding: 12px; 
-    border-radius: 10px; 
+    padding: 12px;
+    border-radius: 12px;
     color: white;
-    flex: 1;
-    min-width: 120px;
+    font-size: 1rem;
+    width: 100%;
+    box-sizing: border-box; /* Fundamental para o alinhamento */
 }
 
-button {
+#add-btn {
+    grid-column: span 2; /* Botão ocupa a largura toda em baixo */
     background: var(--primary);
     color: white;
     border: none;
-    padding: 12px 20px;
-    border-radius: 10px;
-    font-weight: 600;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 700;
     cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
+    transition: 0.2s;
 }
 
-button:hover { background: #1d4ed8; transform: translateY(-2px); }
+#add-btn:hover { background: #2563eb; transform: scale(1.02); }
+
+/* Lista de Itens */
+#lista-compras {
+    margin-top: 2rem;
+}
 
 .item {
-    background: #334155;
+    background: rgba(255,255,255,0.03);
+    padding: 16px;
+    border-radius: 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px;
-    border-radius: 12px;
-    margin-bottom: 10px;
-    animation: fadeIn 0.3s ease;
+    margin-bottom: 12px;
 }
 
-.del-btn { background: #ef4444; padding: 8px 12px; font-size: 0.8rem; }
-.del-btn:hover { background: #dc2626; }
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+.del-btn {
+    background: #ef4444;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: white;
+    font-size: 0.8rem;
+    cursor: pointer;
 }
