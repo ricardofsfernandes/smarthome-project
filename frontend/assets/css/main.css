@@ -1,41 +1,72 @@
+:root {
+    --primary: #2563eb;
+    --bg: #0f172a;
+    --card: #1e293b;
+    --text: #f8fafc;
+}
+
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f0f2f5;
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
     display: flex;
     justify-content: center;
     padding: 20px;
+    margin: 0;
 }
+
 .container {
-    background: white;
+    background: var(--card);
     padding: 2rem;
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
     width: 100%;
-    max-width: 400px;
+    max-width: 450px;
+    border: 1px solid #334155;
 }
-h2 { color: #1a73e8; text-align: center; }
-.input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+
+h2 { text-align: center; font-weight: 700; margin-bottom: 1.5rem; color: #60a5fa; }
+
+.input-group { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+
 input { 
-    padding: 10px; 
-    border: 1px solid #ddd; 
-    border-radius: 8px; 
-    flex: 1; 
+    background: #334155;
+    border: 1px solid #475569;
+    padding: 12px; 
+    border-radius: 10px; 
+    color: white;
+    flex: 1;
+    min-width: 120px;
 }
+
 button {
-    background-color: #1a73e8;
+    background: var(--primary);
     color: white;
     border: none;
-    padding: 10px 15px;
-    border-radius: 8px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-weight: 600;
     cursor: pointer;
-    transition: 0.3s;
+    transition: transform 0.2s, background 0.2s;
 }
-button:hover { background-color: #1557b0; }
+
+button:hover { background: #1d4ed8; transform: translateY(-2px); }
+
 .item {
+    background: #334155;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px;
-    border-bottom: 1px solid #eee;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    animation: fadeIn 0.3s ease;
 }
-.del-btn { background-color: #ea4335; padding: 5px 10px; font-size: 12px; }
+
+.del-btn { background: #ef4444; padding: 8px 12px; font-size: 0.8rem; }
+.del-btn:hover { background: #dc2626; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
