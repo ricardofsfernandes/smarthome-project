@@ -1,0 +1,213 @@
+/* 1. VARIÁVEIS E RESET BASE */
+:root {
+    --primary: #dbb583;       /* Azul vibrante para destaques e botões */
+    --primary-hover: #2563eb; /* Azul ligeiramente mais escuro para hover */
+    --bg: #e7ddce;            /* Fundo muito escuro (Dark Mode) */
+    --card: #1e293b;          /* Fundo dos cartões e inputs */
+    --text: #f8fafc;          /* Texto principal (quase branco) */
+    --text-muted: #e7ddce;    /* Texto secundário (cinza para Qtd e Placeholders) */
+    --danger: #ef4444;        /* Vermelho para o botão Apagar e teste de risco */
+}
+
+body {
+    font-family: 'Inter', -apple-system, system-ui, sans-serif; /* Fonte moderna, otimizada para iOS */
+    background-color: var(--bg);
+    color: var(--text);
+    margin: 0;
+    display: flex;
+    justify-content: center;   /* Centraliza o app horizontalmente no PC */
+    align-items: flex-start;  /* Começa no topo com respiro */
+    min-height: 100vh;
+    padding: 40px 20px;       /* Respiro nas bordas para mobile */
+    box-sizing: border-box;
+}
+
+/* 2. CONTENTOR PRINCIPAL (ESTRUTURA DA APP) */
+.container {
+    width: 100%;
+    max-width: 450px;         /* Largura máxima ideal para telemóvel */
+    background: var(--card);
+    padding: 1.5rem;          /* Espaçamento interno */
+    border-radius: 24px;      /* Bordas bem arredondadas estilo App */
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4); /* Sombra profunda para dar destaque */
+    border: 1px solid rgba(255,255,255,0.05); /* Borda subtil quase invisível */
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+/* 3. CABEÇALHO (H2 COM SVG CENTRALIZADO) */
+header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+h2 { 
+    margin: 0; 
+    font-size: 1.4rem;        /* Tamanho equilibrado para não quebrar no iPhone */
+    color: #2563eb;           /* Azul mais claro para o título */
+    font-weight: 800;
+    line-height: 1.2;
+
+    /* ALINHAMENTO FLEXBOX: Centraliza Texto e SVG verticalmente */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;                /* Espaço entre o texto e o carrinho */
+}
+
+h2 svg {
+    flex-shrink: 0;           /* Impede que o ícone encolha */
+    stroke: #ef4444;          /* Garante que o ícone segue a cor do título */
+    margin-bottom: 2px;       /* Ajuste visual fino para alinhar ao olho */
+}
+
+/* 4. GRUPO DE INPUTS (LAYOUT DE 2 LINHAS, 2 COLUNAS) */
+.input-group {
+    display: grid;
+    /* Coluna 1: Flexível (fr) | Coluna 2: Fixa e estreita (75px) */
+    grid-template-columns: 1fr 75px; 
+    gap: 10px;                /* Espaço entre os elementos */
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+/* Estilo Base para Inputs e Select */
+input, select {
+    background: #334155;      /* Fundo ligeiramente mais claro que o card */
+    border: 1px solid #475569; /* Borda visível mas discreta */
+    padding: 14px;            /* Padding generoso para toque no telemóvel */
+    border-radius: 12px;
+    color: white;
+    font-size: 16px;          /* FUNDAMENTAL: Evita zoom automático no Safari do iPhone */
+    width: 100%;
+    box-sizing: border-box;
+    -webkit-appearance: none; /* Uniformiza o aspeto no iOS (remove estilos nativos) */
+    appearance: none;
+    transition: border-color 0.2s;
+}
+
+/* Placeholder discreto para o campo Item */
+#itemInput::placeholder {
+    color: #94a3b8;
+    opacity: 0.8;
+}
+
+/* 5. REMOVER SETAS (SPINNERS) DO INPUT NUMBER */
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+    text-align: center;       /* Centraliza o número (ex: 0) */
+}
+
+/* 6. ESTILO ESPECÍFICO DO SELECT (UNIDADES) */
+select {
+    background: #334155;
+    border: 1px solid #475569;
+    padding: 14px;
+    border-radius: 12px;
+    color: #94a3b8; /* Esta é a cor cinza que pediste */
+    font-size: 16px;
+    width: 100%;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    text-align: center;
+}
+
+/* Muda a cor para branco quando o utilizador interage */
+select:focus, select:active {
+    color: white; 
+    border-color: var(--primary);
+    outline: none;
+}
+
+/* 7. BOTÃO ADICIONAR (BOTÃO LARGO NA LINHA 2) */
+#add-btn {
+    grid-column: 1;           /* Ocupa apenas a primeira coluna (larga) da linha 2 */
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    width: 100%;
+}
+
+#add-btn:hover {
+    background: var(--primary-hover);
+}
+
+#add-btn:active {
+    transform: scale(0.98);   /* Feedback tátil ao clicar */
+}
+
+/* 8. LISTA DE ITENS (RESULTADO) */
+#lista-compras {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;                /* Espaço entre os cartões de item */
+}
+
+/* Cartão de Item Individual */
+.item {
+    background: rgba(255,255,255,0.03); /* Fundo muito subtil */
+    padding: 16px;
+    border-radius: 16px;
+    display: flex;
+    justify-content: space-between; /* Texto à esquerda, Botão à direita */
+    align-items: center;      /* Alinhamento vertical central */
+    transition: all 0.3s ease; /* Transição suave para o efeito de riscar */
+}
+
+/* Título do Item (Nome) */
+.item strong {
+    display: block;
+    margin-bottom: 2px;
+    color: var(--text);
+    /* O estilo de riscado é aplicado via JS inline (style="") */
+}
+
+/* Subtítulo do Item (Qtd) */
+.item small {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Botão Apagar (Vermelho e Menor) */
+.del-btn {
+    background: var(--danger);
+    border: none;
+    padding: 10px 15px;
+    border-radius: 10px;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    flex-shrink: 0;           /* Impede que o botão encolha se o texto for longo */
+}
+
+.del-btn:hover {
+    opacity: 0.8;
+}
+
+/* 9. FEEDBACK VISUAL DO MODO CARRINHO (CHECK-OFF) */
+/* Quando o item está concluído, o JS aplica opacity: 0.5 e text-decoration inline.
+   Adicionamos este active para feedback de toque no telemóvel. */
+.item:active {
+    background: rgba(255, 255, 255, 0.08);
+    transform: scale(0.99);   /* Pequeno encolhimento ao tocar */
+}
