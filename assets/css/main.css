@@ -3,7 +3,7 @@
     --primary: #dbb583;       /* Azul vibrante para destaques e botões */
     --primary-hover: #2563eb; /* Azul ligeiramente mais escuro para hover */
     --bg: #e7ddce;            /* Fundo muito escuro (Dark Mode) */
-    --card: #1e293b;          /* Fundo dos cartões e inputs */
+    --card: #2d4b73;          /* Fundo dos cartões e inputs */
     --text: #f8fafc;          /* Texto principal (quase branco) */
     --text-muted: #e7ddce;    /* Texto secundário (cinza para Qtd e Placeholders) */
     --danger: #ef4444;        /* Vermelho para o botão Apagar e teste de risco */
