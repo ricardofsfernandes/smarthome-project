@@ -9,13 +9,20 @@
 <body>
     <div class="container">
         <header>
-            <h2>A minha Lista de Compras <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart-icon lucide-shopping-cart"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg></h2>
+            <h2>Mercado <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart-icon lucide-shopping-cart"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg></h2>
         </header>
 
         <div class="input-group">
             <input type="text" id="itemInput" placeholder="Item (ex: Pão)">
             <input type="number" id="qtdInput" placeholder="0" inputmode="numeric" pattern="[0-9]*">
             <button id="add-btn" onclick="adicionarItem()">Adicionar Item</button>
+            <select id="unitInput">
+                <option value="un">Uni</option>
+                <option value="kg">kg</option>
+                <option value="g">Gr</option>
+                <option value="pack">Pack</option>
+                <option value="Lt">Lt</option>
+            </select>
         </div>
 
         <div id="lista-compras">
@@ -25,76 +32,91 @@
 
     <script>
     // URL do teu Backend no Render
-        const API_URL = 'https://smarthome-project.onrender.com/compras';
+    const API_URL = 'https://smarthome-project.onrender.com/compras';
 
-        async function carregarLista() {
-            try {
-                const res = await fetch(API_URL);
-                const dados = await res.json();
-                renderizarLista(dados);
-            } catch (err) {
-                console.error("Erro ao carregar:", err);
-            }
+    async function carregarLista() {
+        try {
+            const res = await fetch(API_URL);
+            const dados = await res.json();
+            renderizarLista(dados);
+        } catch (err) {
+            console.error("Erro ao carregar:", err);
         }
+    }
 
-        function renderizarLista(itens) {
-            const container = document.getElementById('lista-compras');
-            container.innerHTML = '';
-            
-            itens.forEach(item => {
-                container.innerHTML += `
-                    <div class="item">
-                        <div>
-                            <strong>${item.item}</strong> <br>
-                            <small>Qtd: ${item.quantidade}</small>
-                        </div>
-                        <button class="del-btn" onclick="apagarItem('${item._id}')">Apagar</button>
-                    </div>
-                `;
+    function renderizarLista(itens) {
+    const container = document.getElementById('lista-compras');
+    container.innerHTML = '';
+    
+    itens.forEach(item => {
+        const partes = item.item.split('|');
+        const nomeExibicao = partes[0];
+        const unidadeExibicao = partes[1] || 'un';
+
+        container.innerHTML += `
+            <div class="item">
+                <div>
+                    <strong style="font-size: 1.1rem; display: block; margin-bottom: 2px;">${nomeExibicao}</strong>
+                    <small style="color: #94a3b8; font-size: 0.9rem; font-weight: 500;">
+                        Qtd: ${item.quantidade} ${unidadeExibicao}
+                    </small>
+                </div>
+                <button class="del-btn" onclick="apagarItem('${item._id}')">Apagar</button>
+            </div>
+        `;
+    });
+}
+
+    async function adicionarItem() {
+        const itemInput = document.getElementById('itemInput');
+        const qtdInput = document.getElementById('qtdInput');
+        const unitInput = document.getElementById('unitInput');
+
+        const nome = itemInput.value.trim();
+        const qtd = qtdInput.value || 0;
+        const unidade = unitInput.value;
+
+        if (!nome) return alert("Escreve o item!");
+
+        try {
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    // Enviamos o nome e a unidade separados por '|'
+                    // Exemplo: "Cerveja|pack"
+                    item: `${nome}|${unidade}`, 
+                    quantidade: qtd 
+                })
             });
-        }
-
-        async function adicionarItem() {
-            const itemInput = document.getElementById('itemInput');
-            const qtdInput = document.getElementById('qtdInput');
             
-            const nome = itemInput.value;
-            const qtd = qtdInput.value || 1;
-
-            if (!nome) return alert("Escreve o nome do item!");
-
-            try {
-                const res = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ item: nome, quantidade: qtd })
-                });
-                const novaLista = await res.json();
-                renderizarLista(novaLista);
-                
-                // LIMPEZA: Limpa ambos os campos após adicionar
-                itemInput.value = '';
-                qtdInput.value = ''; 
-                
-                // Volta o cursor para o nome do item
-                itemInput.focus();
-            } catch (err) {
-                alert("Erro ao adicionar!");
-            }
+            const novaLista = await res.json();
+            renderizarLista(novaLista);
+            
+            // Limpeza dos campos
+            itemInput.value = '';
+            qtdInput.value = '';
+            unitInput.value = 'un'; 
+            itemInput.focus();
+        } catch (err) {
+            alert("Erro ao adicionar!");
         }
+    }
 
-        async function apagarItem(id) {
-            try {
-                const res = await fetch(`${API_URL}/limpar/${id}`);
-                const novaLista = await res.json();
-                renderizarLista(novaLista);
-            } catch (err) {
-                alert("Erro ao apagar!");
-            }
+    async function apagarItem(id) {
+        try {
+            // Garante que a rota condiz com o teu server.js (/compras/limpar/:id ou /limpar/:id)
+            // Se o teu servidor usa app.get('/compras/limpar/:id'), mantém assim:
+            const res = await fetch(`${API_URL}/limpar/${id}`);
+            const novaLista = await res.json();
+            renderizarLista(novaLista);
+        } catch (err) {
+            alert("Erro ao apagar!");
         }
+    }
 
-        // Iniciar
-        carregarLista();
+    // Iniciar
+    carregarLista();
 </script>
 </body>
 </html>

@@ -61,9 +61,10 @@ h2 svg {
 /* O Segredo do Alinhamento dos Inputs */
 .input-group {
     display: grid;
-    grid-template-columns: 1fr 70px; /* Reduzi a coluna da Qtd para 70px */
+    /* Coluna 1: Flexível (fr) | Coluna 2: Fixa e estreita (75px) */
+    grid-template-columns: 1fr 75px; 
     gap: 10px;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     width: 100%;
 }
 
@@ -77,10 +78,28 @@ input {
     width: 100%;
     box-sizing: border-box; /* Fundamental para o alinhamento */
     -webkit-appearance: none; /* Uniformiza o aspeto no iOS */
+    appearance: none;
+}
+
+/* O botão e os inputs já herdam o comportamento do grid, 
+   mas vamos garantir que o select tenha o mesmo estilo */
+select {
+    background: #334155;
+    border: 1px solid #475569;
+    padding: 12px;
+    border-radius: 12px;
+    color: #94a3b8; /* Cor cinza placeholder */
+    font-size: 14px; /* Evita zoom no iPhone */
+    width: 100%;
+    cursor: pointer;
+    -webkit-appearance: none; /* Remove estilo padrão da Apple */
+    appearance: none;
+    text-align: left;
 }
 
 #add-btn {
-    grid-column: span 2; /* Botão ocupa a largura toda em baixo */
+    grid-column: 1; 
+    width: 100%;
     background: var(--primary);
     color: white;
     border: none;
