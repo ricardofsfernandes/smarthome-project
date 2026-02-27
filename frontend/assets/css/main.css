@@ -1,7 +1,7 @@
 :root {
-    --primary: #3b82f6;
-    --bg: #0f172a;
-    --card: #1e293b;
+    --primary: #b49264;
+    --bg: #e7ddce;
+    --card: #2d4b73;
     --text: #f8fafc;
 }
 
@@ -41,9 +41,21 @@ header {
 h2 { 
     margin: 0; 
     font-size: 1.4rem; /* Um pouco menor para caber no iPhone sem quebrar */
-    color: #ef4444;
+    color: #b49264;
     font-weight: 800;
     line-height: 1.2;
+
+    /* O SEGREDO DO ALINHAMENTO */
+    display: flex;
+    align-items: center;     /* Alinha verticalmente o texto e o ícone */
+    justify-content: center;  /* Centraliza o conjunto todo no meio do container */
+    gap: 10px;
+}
+
+h2 svg {
+    /* Opcional: Garante que o ícone não "encolha" e mantém a cor do texto */
+    flex-shrink: 0;
+    stroke: #ef4444; 
 }
 
 /* O Segredo do Alinhamento dos Inputs */
@@ -79,7 +91,7 @@ input {
     transition: 0.2s;
 }
 
-#add-btn:hover { background: #2563eb; transform: scale(1.02); }
+#add-btn:hover { background: #e7ddce; transform: scale(1.02); }
 
 /* Lista de Itens */
 #lista-compras {
