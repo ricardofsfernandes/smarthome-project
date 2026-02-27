@@ -26,7 +26,7 @@ mongoose.connect(mongoURI)
 const ItemSchema = new mongoose.Schema({
     item: { type: String, required: true },
     quantidade: { type: Number, default: 1 },
-    concluido: { type: Boolean, default: false } // Campo novo para tarefas!
+    concluido: { type: Boolean, default: false }
 });
 const Item = mongoose.model('Item', ItemSchema);
 
@@ -54,6 +54,22 @@ app.post('/compras', async (req, res) => {
         res.status(201).json(lista);
     } catch (err) {
         res.status(500).json({ erro: "Erro ao guardar" });
+    }
+});
+
+// Alternar entre concluído e pendente (NOVA ROTA)
+app.patch('/compras/alternar/:id', async (req, res) => {
+    try {
+        const item = await Item.findById(req.params.id);
+        if (!item) return res.status(404).json({ erro: "Item não encontrado" });
+
+        item.concluido = !item.concluido; // Inverte o estado (true -> false / false -> true)
+        await item.save();
+        
+        const lista = await Item.find();
+        res.json(lista);
+    } catch (err) {
+        res.status(500).json({ erro: "Erro ao atualizar estado" });
     }
 });
 

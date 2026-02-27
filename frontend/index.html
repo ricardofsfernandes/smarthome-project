@@ -44,7 +44,8 @@
         }
     }
 
-    function renderizarLista(itens) {
+    // 1. Atualizamos a renderização para verificar o estado 'concluido'
+function renderizarLista(itens) {
     const container = document.getElementById('lista-compras');
     container.innerHTML = '';
     
@@ -52,19 +53,39 @@
         const partes = item.item.split('|');
         const nomeExibicao = partes[0];
         const unidadeExibicao = partes[1] || 'un';
+        
+        // Verifica se o item está concluído para aplicar o estilo
+        const estiloRiscado = item.concluido ? 'text-decoration: line-through; opacity: 0.5;' : '';
 
         container.innerHTML += `
-            <div class="item">
-                <div>
+            <div class="item" onclick="alternarConcluido('${item._id}', ${item.concluido})" style="cursor: pointer;">
+                <div style="${estiloRiscado}">
                     <strong style="font-size: 1.1rem; display: block; margin-bottom: 2px;">${nomeExibicao}</strong>
                     <small style="color: #94a3b8; font-size: 0.9rem; font-weight: 500;">
                         Qtd: ${item.quantidade} ${unidadeExibicao}
                     </small>
                 </div>
-                <button class="del-btn" onclick="apagarItem('${item._id}')">Apagar</button>
+                <button class="del-btn" onclick="event.stopPropagation(); apagarItem('${item._id}')">Apagar</button>
             </div>
         `;
     });
+}
+
+// 2. Nova função para riscar/desriscar
+async function alternarConcluido(id, estadoAtual) {
+    try {
+        // Vamos criar uma nova rota no backend para isto ou usar um PUT
+        // Para agora, vamos assumir que criamos a rota /compras/alternar/:id
+        const res = await fetch(`${API_URL}/compras/alternar/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ concluido: !estadoAtual })
+        });
+        const novaLista = await res.json();
+        renderizarLista(novaLista);
+    } catch (err) {
+        console.error("Erro ao alternar estado:", err);
+    }
 }
 
     async function adicionarItem() {
