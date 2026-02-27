@@ -110,7 +110,7 @@ select {
     transition: 0.2s;
 }
 
-#add-btn:hover { background: #e7ddce; transform: scale(1.02); }
+#add-btn:hover { background: #b49264; transform: scale(1.02); }
 
 /* Lista de Itens */
 #lista-compras {
