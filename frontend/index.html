@@ -55,7 +55,9 @@ function renderizarLista(itens) {
         const unidadeExibicao = partes[1] || 'un';
         
         // Verifica se o item está concluído para aplicar o estilo
-        const estiloRiscado = item.concluido ? 'text-decoration: line-through; opacity: 0.5;' : '';
+        const estiloRiscado = item.concluido 
+    ? 'text-decoration: line-through; opacity: 0.5; color: #ef4444;' 
+    : '';
 
         container.innerHTML += `
             <div class="item" onclick="alternarConcluido('${item._id}', ${item.concluido})" style="cursor: pointer;">
@@ -72,19 +74,22 @@ function renderizarLista(itens) {
 }
 
 // 2. Nova função para riscar/desriscar
-async function alternarConcluido(id, estadoAtual) {
+async function alternarConcluido(id) {
     try {
-        // Vamos criar uma nova rota no backend para isto ou usar um PUT
-        // Para agora, vamos assumir que criamos a rota /compras/alternar/:id
-        const res = await fetch(`${API_URL}/compras/alternar/${id}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ concluido: !estadoAtual })
+        // Como API_URL já tem '/compras', aqui só adicionamos '/alternar/'
+        const res = await fetch(`${API_URL}/alternar/${id}`, {
+            method: 'PATCH'
         });
+        
+        if (res.status === 404) {
+            console.error("Erro 404: Rota não encontrada. Verifica o Deploy no Render.");
+            return;
+        }
+
         const novaLista = await res.json();
         renderizarLista(novaLista);
     } catch (err) {
-        console.error("Erro ao alternar estado:", err);
+        console.error("Erro na ligação:", err);
     }
 }
 
@@ -125,16 +130,19 @@ async function alternarConcluido(id, estadoAtual) {
     }
 
     async function apagarItem(id) {
-        try {
-            // Garante que a rota condiz com o teu server.js (/compras/limpar/:id ou /limpar/:id)
-            // Se o teu servidor usa app.get('/compras/limpar/:id'), mantém assim:
-            const res = await fetch(`${API_URL}/limpar/${id}`);
-            const novaLista = await res.json();
-            renderizarLista(novaLista);
-        } catch (err) {
-            alert("Erro ao apagar!");
-        }
+    try {
+        // Como API_URL já tem '/compras', aqui só adicionamos '/limpar/'
+        const res = await fetch(`${API_URL}/limpar/${id}`);
+        
+        if (!res.ok) throw new Error("Erro ao apagar");
+
+        const novaLista = await res.json();
+        renderizarLista(novaLista);
+    } catch (err) {
+        console.error("Erro ao apagar:", err);
+        alert("Erro ao apagar!");
     }
+}
 
     // Iniciar
     carregarLista();
