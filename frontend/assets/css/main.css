@@ -6,7 +6,7 @@
 }
 
 body {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif, system-ui, sans-serif;
     background-color: var(--bg);
     color: var(--text);
     margin: 0;
@@ -41,7 +41,7 @@ header {
 h2 { 
     margin: 0; 
     font-size: 1.4rem; /* Um pouco menor para caber no iPhone sem quebrar */
-    color: #60a5fa;
+    color: #ef4444;
     font-weight: 800;
     line-height: 1.2;
 }
@@ -61,9 +61,10 @@ input {
     padding: 12px;
     border-radius: 12px;
     color: white;
-    font-size: 1rem;
+    font-size: 16px;
     width: 100%;
     box-sizing: border-box; /* Fundamental para o alinhamento */
+    -webkit-appearance: none; /* Uniformiza o aspeto no iOS */
 }
 
 #add-btn {

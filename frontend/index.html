@@ -9,12 +9,12 @@
 <body>
     <div class="container">
         <header>
-            <h2>Minha Lista de Compras</h2>
+            <h2>Mercado <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart-icon lucide-shopping-cart"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg></h2>
         </header>
 
         <div class="input-group">
             <input type="text" id="itemInput" placeholder="Item (ex: Pão)">
-            <input type="number" id="qtdInput" placeholder="Qtd" value="1">
+            <input type="number" id="qtdInput" placeholder="0" inputmode="numeric" pattern="[0-9]*">
             <button id="add-btn" onclick="adicionarItem()">Adicionar Item</button>
         </div>
 
@@ -55,8 +55,11 @@
         }
 
         async function adicionarItem() {
-            const nome = document.getElementById('itemInput').value;
-            const qtd = document.getElementById('qtdInput').value;
+            const itemInput = document.getElementById('itemInput');
+            const qtdInput = document.getElementById('qtdInput');
+            
+            const nome = itemInput.value;
+            const qtd = qtdInput.value || 1;
 
             if (!nome) return alert("Escreve o nome do item!");
 
@@ -68,7 +71,13 @@
                 });
                 const novaLista = await res.json();
                 renderizarLista(novaLista);
-                document.getElementById('itemInput').value = '';
+                
+                // LIMPEZA: Limpa ambos os campos após adicionar
+                itemInput.value = '';
+                qtdInput.value = ''; 
+                
+                // Volta o cursor para o nome do item
+                itemInput.focus();
             } catch (err) {
                 alert("Erro ao adicionar!");
             }
